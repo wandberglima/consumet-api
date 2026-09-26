@@ -12,53 +12,58 @@ import lightnovels from './routes/light-novels';
 import movies from './routes/movies';
 import meta from './routes/meta';
 
-(async () => {
-  const PORT = Number(process.env.PORT);
-  const fastify = Fastify({
-    logger: true,
+const PORT = Number(process.env.PORT || 3000);
+
+const app = Fastify({
+  logger: true,
+});
+
+app.register(FastifyCors, {
+  origin: '*',
+  methods: 'GET',
+});
+
+app.register(FastifyRateLimit, {
+  global: true,
+  max: 90,
+  timeWindow: 60000,
+  allowList: [],
+  errorResponseBuilder(req, context) {
+    return {
+      message: 'if you are a human, please wait a bit before trying again.',
+    };
+  },
+});
+
+app.register(books, { prefix: '/books' });
+app.register(anime, { prefix: '/anime' });
+app.register(manga, { prefix: '/manga' });
+app.register(comics, { prefix: '/comics' });
+app.register(lightnovels, { prefix: '/light-novels' });
+app.register(movies, { prefix: '/movies' });
+app.register(meta, { prefix: '/meta' });
+
+app.get('/', (_, rp) => {
+  rp.status(200).send('Welcome to consumet api! 🎉');
+});
+app.get('*', (request, reply) => {
+  reply.status(404).send({
+    message: '',
+    error: 'page not found',
   });
-  await fastify.register(FastifyCors, {
-    origin: '*',
-    methods: 'GET',
-  });
+});
 
-  await fastify.register(FastifyRateLimit, {
-    global: true,
-    max: 90,
-    timeWindow: 60000,
-    allowList: [],
-    errorResponseBuilder(req, context) {
-      return {
-        message: 'if you are a human, please wait a bit before trying again.',
-      };
-    },
-  });
+export default async function handler(request: any, response: any) {
+  await app.ready();
+  app.server.emit('request', request, response);
+}
 
-  await fastify.register(books, { prefix: '/books' });
-  await fastify.register(anime, { prefix: '/anime' });
-  await fastify.register(manga, { prefix: '/manga' });
-  await fastify.register(comics, { prefix: '/comics' });
-  await fastify.register(lightnovels, { prefix: '/light-novels' });
-  await fastify.register(movies, { prefix: '/movies' });
-  await fastify.register(meta, { prefix: '/meta' });
-
-  try {
-    fastify.get('/', (_, rp) => {
-      rp.status(200).send('Welcome to consumet api! 🎉');
+if (process.env.VERCEL !== '1') {
+  app
+    .listen({ port: PORT, host: '0.0.0.0' })
+    .then((address) => console.log(`server listening on ${address}`))
+    .catch((err: any) => {
+      app.log.error(err);
+      process.exit(1);
     });
-    fastify.get('*', (request, reply) => {
-      reply.status(404).send({
-        message: '',
-        error: 'page not found',
-      });
-    });
-
-    fastify.listen({ port: PORT, host: '0.0.0.0' }, (e, address) => {
-      if (e) throw e;
-      console.log(`server listening on ${address}`);
-    });
-  } catch (err: any) {
-    fastify.log.error(err);
-    process.exit(1);
-  }
-})();
+}
