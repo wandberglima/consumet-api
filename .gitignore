@@ -3,3 +3,6 @@ yarn-error.log
 .env
 src/scripts
 .vscode
+.vercel
+!.vercel/project.json
+.env*
