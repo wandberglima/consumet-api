@@ -25,20 +25,20 @@ jobs:
       - name: Pull Vercel environment information
         run: npx vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.SECRET2 }}
+          VERCEL_PROJECT_ID: ${{ secrets.SECRET3 }}
+          VERCEL_TOKEN: ${{ secrets.SECRET1 }}
 
       - name: Build Project Artifacts
         run: npx vercel build --prod --token="$VERCEL_TOKEN"
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.SECRET2 }}
+          VERCEL_PROJECT_ID: ${{ secrets.SECRET3 }}
+          VERCEL_TOKEN: ${{ secrets.SECRET1 }}
 
       - name: Deploy Project Artifacts to Vercel
         run: npx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.SECRET2 }}
+          VERCEL_PROJECT_ID: ${{ secrets.SECRET3 }}
+          VERCEL_TOKEN: ${{ secrets.SECRET1 }}
